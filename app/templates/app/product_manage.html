@@ -1,0 +1,61 @@
+{% extends "app/base.html" %} {% load static %} {% block content %}
+<div class="mb-5">
+  <a href="{% url 'app:shop_manage' %}" class="text-blue-600 hover:text-blue-800">← ショップ管理に戻る</a>
+</div>
+
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">{{ filtered_shop.name }} - 商品管理</h1>
+</div>
+
+<div class="mb-5 text-center">
+  <a href="{% url 'app:product_register' %}?shop_id={{ filtered_shop.id }}" class="bg-green-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-700 transition-colors border-2 border-green-700 shadow-lg">
+    新規商品登録
+  </a>
+</div>
+
+{% if products %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {% for product in products %}
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    {% if product.image %}
+    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-48 object-cover">
+    {% else %}
+    <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+      <span class="text-gray-500 text-lg">📷 画像なし</span>
+    </div>
+    {% endif %}
+    
+    <div class="p-6">
+      <h3 class="text-xl font-bold text-gray-800 mb-2">{{ product.name }}</h3>
+      <p class="text-gray-600 mb-2">{{ product.description|default:"説明なし" }}</p>
+      
+      <div class="flex flex-wrap gap-2 mb-4">
+        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+          🏷️ {{ product.get_category_display }}
+        </span>
+        <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
+          💰 ¥{{ product.price }}
+        </span>
+        <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
+          📦 {{ product.stock }}個
+        </span>
+      </div>
+      
+      <div class="flex flex-wrap gap-2">
+        <a href="{% url 'app:product_edit' product.id %}" class="bg-yellow-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-yellow-700 transition-colors border border-yellow-700">
+          ✏️ 編集
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-12">
+  <p class="text-gray-500 text-lg mb-4">まだ商品が登録されていません</p>
+  <a href="{% url 'app:product_register' %}?shop_id={{ filtered_shop.id }}" class="bg-green-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-700 transition-colors border-2 border-green-700 shadow-lg">
+    🆕 最初の商品を登録
+  </a>
+</div>
+{% endif %}
+{% endblock %} 

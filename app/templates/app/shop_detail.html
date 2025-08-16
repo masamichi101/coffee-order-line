@@ -1,0 +1,140 @@
+{% extends "app/base.html" %} {% load static %} {% block content %}
+<div class="mb-5">
+  <div class="flex justify-between items-center">
+    <a href="{% url 'app:index' %}?line_id={{ request.GET.line_id }}" class="text-blue-600 hover:text-blue-800">← ショップ一覧に戻る</a>
+    
+    <!-- カートアイコン -->
+    <a href="{% url 'app:cart' %}?line_id={{ request.GET.line_id }}" class="relative bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+      🛒 カート
+      {% if cart.item_count > 0 %}
+      <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
+        {{ cart.item_count }}
+      </span>
+      {% endif %}
+    </a>
+  </div>
+</div>
+
+<div class="mb-5">
+  <div class="text-center">
+    {% if shop.image %}
+    <img src="{{ shop.image.url }}" alt="{{ shop.name }}" class="w-full max-w-md mx-auto rounded-lg shadow-md">
+    {% endif %}
+    <h1 class="text-3xl font-bold mt-4">{{ shop.name }}</h1>
+    <p class="text-gray-600 mt-2">{{ shop.description|default:"説明がありません" }}</p>
+    <div class="mt-4 text-sm text-gray-500">
+      <p>📍 {{ shop.address|default:"住所未設定" }}</p>
+      <p>📞 {{ shop.tel|default:"電話番号未設定" }}</p>
+      <p>🕐 {{ shop.open_time|time:"H:i" }} - {{ shop.close_time|time:"H:i" }}</p>
+      <p>状態: {% if shop.is_active %}✅ 営業中{% else %}❌ 営業終了{% endif %}</p>
+    </div>
+  </div>
+</div>
+
+<div class="mb-8">
+  <h2 class="text-2xl font-bold mb-4">🍹 商品一覧</h2>
+  
+  {% for category, products in products_by_category.items %}
+  <div class="mb-6">
+    <h3 class="text-xl font-semibold mb-3 text-gray-700 border-b pb-2">
+      {% if category == "food" %}🍽️ フード
+      {% elif category == "drink" %}🥤 ドリンク
+      {% else %}🍹 その他
+      {% endif %}
+    </h3>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for product in products %}
+      <div class="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+        <div class="relative pb-[56.25%] overflow-hidden">
+          {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}" class="absolute top-0 left-0 w-full h-full object-cover">
+          {% else %}
+          <div class="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center">
+            <span class="text-gray-500 text-lg">📷 画像なし</span>
+          </div>
+          {% endif %}
+        </div>
+        
+        <div class="p-4">
+          <h4 class="font-bold text-lg mb-2">{{ product.name }}</h4>
+          <p class="text-gray-600 text-sm mb-3">{{ product.description|default:"説明がありません" }}</p>
+          
+          <div class="flex justify-between items-center mb-3">
+            <span class="text-xl font-bold text-red-600">¥{{ product.price }}</span>
+            {% if product.is_available %}
+              <span class="text-green-600 text-sm font-medium">在庫: {{ product.stock }}個</span>
+            {% else %}
+              <span class="text-red-600 text-sm font-medium">売切れ</span>
+            {% endif %}
+          </div>
+          
+          {% if product.is_available %}
+          <form method="post" action="{% url 'app:cart' %}?line_id={{ request.GET.line_id }}" class="mt-3">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="add_to_cart">
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            
+            <div class="flex items-center space-x-3">
+              <div class="flex items-center border rounded-lg overflow-hidden">
+                <button type="button" onclick="decreaseQuantity({{ product.id }})" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                  ➖
+                </button>
+                <input type="number" name="quantity" id="quantity-{{ product.id }}" value="1" min="1" max="{{ product.stock }}" class="w-16 px-3 py-2 border-0 text-center focus:outline-none">
+                <button type="button" onclick="increaseQuantity({{ product.id }}, {{ product.stock }})" class="px-3 py-2 bg-gray-100 hover:bg-gray-200 transition-colors">
+                  ➕
+                </button>
+              </div>
+              
+              <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium flex-1">
+                🛒 カートに追加
+              </button>
+            </div>
+          </form>
+          {% else %}
+          <div class="mt-3 p-3 bg-red-100 text-red-700 rounded-lg text-sm text-center">
+            ❌ この商品は現在販売していません
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% empty %}
+  <div class="text-center text-gray-500 py-10">
+    <div class="text-6xl mb-4">🍹</div>
+    <p class="text-lg mb-2">商品が登録されていません</p>
+    <p class="text-sm">または、すべての商品が販売停止中です</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- カートに追加成功時のメッセージ表示 -->
+{% if messages %}
+<div class="fixed top-4 right-4 z-50">
+  {% for message in messages %}
+  <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-2 shadow-lg">
+    {{ message }}
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<script>
+function decreaseQuantity(productId) {
+  const input = document.getElementById(`quantity-${productId}`);
+  if (input.value > 1) {
+    input.value = parseInt(input.value) - 1;
+  }
+}
+
+function increaseQuantity(productId, maxStock) {
+  const input = document.getElementById(`quantity-${productId}`);
+  if (input.value < maxStock) {
+    input.value = parseInt(input.value) + 1;
+  }
+}
+</script>
+
+{% endblock %} 

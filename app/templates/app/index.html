@@ -1,0 +1,52 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">ショップ一覧</h1>
+</div>
+
+{% if shops %}
+<div class="space-y-4">
+  {% for shop in shops %}
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <div class="flex items-center space-x-4">
+      <div class="w-24 h-24 flex-shrink-0">
+        {% if shop.image %}
+        <img src="{{ shop.image.url }}" alt="{{ shop.name }}" class="w-full h-full object-cover rounded">
+        {% else %}
+        <img src="{% static 'img/noImage.png' %}" alt="画像なし" class="w-full h-full object-cover rounded">
+        {% endif %}
+      </div>
+      
+      <div class="flex-1">
+        <h3 class="text-xl font-bold">{{ shop.name }}</h3>
+        <p class="text-sm text-gray-600">{{ shop.address|default:"住所未設定" }}</p>
+        <p class="text-sm text-gray-500">{{ shop.tel|default:"電話番号未設定" }}</p>
+        <p class="text-sm text-gray-500">{{ shop.open_time|time:"H:i" }} - {{ shop.close_time|time:"H:i" }}</p>
+        <div class="mt-2">
+          {% if shop.is_active %}
+            <span class="inline-block bg-green-100 text-green-800 text-xs px-2 py-1 rounded-full">営業中</span>
+          {% else %}
+            <span class="inline-block bg-red-100 text-red-800 text-xs px-2 py-1 rounded-full">営業終了</span>
+          {% endif %}
+        </div>
+      </div>
+      
+      <div class="text-right">
+        <a href="{% url 'app:shop_detail' shop.id %}?line_id={{ request.GET.line_id }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+          商品を見る
+        </a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20">
+  <div class="text-6xl mb-4">🏪</div>
+  <h2 class="text-2xl font-bold text-gray-600 mb-4">ショップが登録されていません</h2>
+  <p class="text-gray-500">管理者がショップを登録してください</p>
+</div>
+{% endif %}
+{% endblock %}

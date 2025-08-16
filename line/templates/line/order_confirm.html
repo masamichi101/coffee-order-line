@@ -1,0 +1,74 @@
+{% extends "line/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="mb-5">
+  <a href="{% url 'line:cart' %}?line_id={{ line_id }}" class="text-blue-600 hover:text-blue-800">← カートに戻る</a>
+</div>
+
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">注文確認</h1>
+</div>
+
+<div class="mb-6">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold mb-4">注文内容</h2>
+    
+    {% for item in cart.items.all %}
+    <div class="border-b py-4 last:border-b-0">
+      <div class="flex items-center space-x-4">
+        <div class="w-20 h-20 flex-shrink-0">
+          {% if item.product.image %}
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover rounded">
+          {% else %}
+          <div class="w-full h-full bg-gray-200 rounded flex items-center justify-center">
+            <span class="text-gray-500 text-sm">📷</span>
+          </div>
+          {% endif %}
+        </div>
+        
+        <div class="flex-1">
+          <h3 class="font-bold">{{ item.product.name }}</h3>
+          <p class="text-sm text-gray-600">{{ item.product.shop.name }}</p>
+          <p class="text-lg font-bold text-red-600">¥{{ item.product.price }}</p>
+        </div>
+        
+        <div class="text-right">
+          <p class="text-lg font-bold">数量: {{ item.quantity }}</p>
+          <p class="text-lg font-bold">小計: ¥{{ item.subtotal }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+    
+    <div class="mt-6 pt-4 border-t">
+      <div class="flex justify-between items-center text-xl font-bold">
+        <span>合計金額:</span>
+        <span class="text-red-600">¥{{ cart.total_price }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="mb-6">
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold mb-4">注文詳細</h2>
+    
+    <form method="post" action="{% url 'line:order_confirm' %}?line_id={{ line_id }}">
+      {% csrf_token %}
+      
+      <div class="mb-4">
+        <label for="note" class="block text-sm font-medium text-gray-700 mb-2">備考（任意）</label>
+        <textarea name="note" id="note" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="アレルギーや特別なご要望があればお書きください"></textarea>
+      </div>
+      
+      <div class="text-center">
+        <button type="submit" class="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-bold hover:bg-green-700 transition-colors border-2 border-green-700 shadow-lg">
+          🛒 注文を確定する
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %} 

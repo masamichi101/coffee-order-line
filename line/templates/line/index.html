@@ -1,0 +1,104 @@
+{% extends "line/base.html" %} {% load static %} {% block content %}
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">ショップ一覧</h1>
+  <p class="text-center text-gray-600 mt-2">ショップを選択してください</p>
+</div>
+
+
+
+{% if shops %}
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+  {% for shop in shops %}
+  <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <a href="{% url 'line:product' shop.id %}{% if line_id %}?line_id={{ line_id }}{% endif %}" class="block shop-product-link" data-shop-id="{{ shop.id }}">
+      <div class="relative pb-[56.25%] overflow-hidden">
+        {% if shop.image %}
+        <img src="{{ shop.image.url }}" alt="{{ shop.name }}" class="absolute top-0 left-0 w-full h-full object-cover">
+        {% else %}
+        <div class="absolute top-0 left-0 w-full h-full bg-gray-200 flex items-center justify-center">
+          <span class="text-gray-500 text-lg">📷 画像なし</span>
+        </div>
+        {% endif %}
+      </div>
+      
+      <div class="p-6">
+        <div class="flex items-center mb-2">
+          {% if shop.logo %}
+          <img src="{{ shop.logo.url }}" alt="{{ shop.name }} ロゴ" class="w-6 h-6 object-contain mr-2">
+          {% endif %}
+          <h3 class="text-xl font-bold text-gray-800">{{ shop.name }}</h3>
+        </div>
+        <p class="text-gray-600 mb-3">{{ shop.description|default:"説明なし" }}</p>
+        
+        <div class="space-y-2 text-sm text-gray-500">
+          <p class="flex items-center">
+            <span class="mr-2">📍</span>
+            {{ shop.address|default:"住所未設定" }}
+          </p>
+          <p class="flex items-center">
+            <span class="mr-2">📞</span>
+            {{ shop.tel|default:"電話番号未設定" }}
+          </p>
+          <p class="flex items-center">
+            <span class="mr-2">🕐</span>
+            {{ shop.open_time|time:"H:i" }} - {{ shop.close_time|time:"H:i" }}
+          </p>
+        </div>
+        
+        <div class="mt-4 flex items-center justify-between">
+          <span class="px-3 py-1 {% if shop.is_active %}bg-green-100 text-green-800{% else %}bg-red-100 text-red-800{% endif %} text-sm rounded-full">
+            {% if shop.is_active %}営業中{% else %}営業終了{% endif %}
+          </span>
+          <span class="text-sm text-gray-500">
+             {{ shop.products.count }}商品
+          </span>
+        </div>
+        
+        <div class="mt-4 text-center">
+          <span class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            商品を見る
+          </span>
+        </div>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-20">
+  <div class="text-6xl mb-4">🏪</div>
+  <h2 class="text-2xl font-bold text-gray-600 mb-4">ショップが登録されていません</h2>
+  <p class="text-gray-500 mb-8">現在、利用可能なショップがありません</p>
+  
+  <!-- 追加のデバッグ情報 -->
+  <div class="bg-yellow-100 border border-yellow-300 rounded-lg p-4 max-w-md mx-auto">
+    <h3 class="font-bold text-yellow-800 mb-2">⚠️ 考えられる原因</h3>
+    <ul class="text-sm text-yellow-700 text-left space-y-1">
+      <li>• データベースにショップが登録されていない</li>
+      <li>• すべてのショップが非アクティブ（is_active=False）</li>
+      <li>• データベース接続の問題</li>
+    </ul>
+  </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 共通のLINE認証クラスを使用
+    const lineAuth = new LineAuth("{{ liff_id }}");
+    
+    // ページを初期化
+    lineAuth.initializePage({
+      updateShopLinks: true,
+      updateCartLinks: true,
+      updateOrderHistoryLinks: true,
+      showLoginStatus: true,
+      loginStatusContainerId: 'login-status'
+    });
+  });
+</script>
+{% endblock %}
+

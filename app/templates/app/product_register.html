@@ -1,0 +1,86 @@
+{% extends "app/base.html" %} {% load static %} {% block content %}
+<div class="mb-5">
+  {% if selected_shop %}
+    <a href="{% url 'app:product_manage' selected_shop.id %}" class="text-blue-600 hover:text-blue-800">← {{ selected_shop.name }}の商品管理に戻る</a>
+  {% else %}
+    <a href="{% url 'app:shop_manage' %}" class="text-blue-600 hover:text-blue-800">← ショップ管理に戻る</a>
+  {% endif %}
+</div>
+
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">
+    {% if selected_shop %}
+      {{ selected_shop.name }} - 商品登録
+    {% else %}
+      商品登録
+    {% endif %}
+  </h1>
+</div>
+
+{% if selected_shop %}
+<div class="mb-6 text-center">
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 max-w-md mx-auto">
+    <h2 class="text-lg font-semibold text-blue-800 mb-2">📋 登録先ショップ</h2>
+    <p class="text-blue-700">{{ selected_shop.name }}</p>
+    <p class="text-sm text-blue-600">{{ selected_shop.address|default:"住所未設定" }}</p>
+  </div>
+</div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" class="max-w-2xl mx-auto">
+  {% csrf_token %}
+  
+  <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+    <div>
+      <label for="id_shop" class="block text-sm font-medium text-gray-700 mb-2">ショップ *</label>
+      <select name="shop" id="id_shop" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">ショップを選択してください</option>
+        {% for shop in form.shop.field.queryset %}
+        <option value="{{ shop.id }}" {% if selected_shop and shop.id == selected_shop.id %}selected{% endif %}>{{ shop.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    
+    <div>
+      <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">商品名 *</label>
+      <input type="text" name="name" id="id_name" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例: カフェラテ">
+    </div>
+    
+    <div>
+      <label for="id_category" class="block text-sm font-medium text-gray-700 mb-2">カテゴリ *</label>
+      <select name="category" id="id_category" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <option value="">カテゴリを選択してください</option>
+        <option value="food">🍽️ フード</option>
+        <option value="drink">🥤 ドリンク</option>
+      </select>
+    </div>
+    
+    <div>
+      <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">説明</label>
+      <textarea name="description" id="id_description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="商品の特徴や味を説明してください"></textarea>
+    </div>
+    
+    <div>
+      <label for="id_price" class="block text-sm font-medium text-gray-700 mb-2">価格 *</label>
+      <input type="number" name="price" id="id_price" required min="0" step="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例: 450">
+    </div>
+    
+    <div>
+      <label for="id_stock" class="block text-sm font-medium text-gray-700 mb-2">在庫数 *</label>
+      <input type="number" name="stock" id="id_stock" required min="0" step="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例: 100">
+    </div>
+    
+    <div>
+      <label for="id_image" class="block text-sm font-medium text-gray-700 mb-2">画像</label>
+      <input type="file" name="image" id="id_image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+    
+    <div class="text-center">
+      <button type="submit" class="bg-blue-600 text-white px-8 py-3 mt-5 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors border-2 border-blue-700 shadow-lg">
+        商品を登録
+      </button>
+    </div>
+  </div>
+</form>
+
+{% endblock %} 

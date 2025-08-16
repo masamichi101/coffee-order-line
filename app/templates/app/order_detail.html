@@ -1,0 +1,117 @@
+{% extends "app/base.html" %} {% load static %} {% block content %}
+<div class="mb-5">
+  <a href="{% url 'app:shop_manage' %}" class="text-blue-600 hover:text-blue-800">← ショップ管理に戻る</a>
+</div>
+
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">注文詳細</h1>
+</div>
+
+<div class="max-w-4xl mx-auto">
+  <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+    <h2 class="text-xl font-bold mb-4">注文情報</h2>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
+        <h3 class="font-semibold mb-2">基本情報</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="font-medium">注文番号:</span>
+            <span>{{ order.id }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-medium">注文日時:</span>
+            <span>{{ order.created_at|date:"Y/m/d H:i" }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-medium">ステータス:</span>
+            <span class="px-2 py-1 rounded text-xs font-medium
+              {% if order.status == 'pending' %}bg-yellow-100 text-yellow-800
+              {% elif order.status == 'preparing' %}bg-blue-100 text-blue-800
+              {% elif order.status == 'ready' %}bg-green-100 text-green-800
+              {% elif order.status == 'completed' %}bg-gray-100 text-gray-800
+              {% elif order.status == 'cancelled' %}bg-red-100 text-red-800
+              {% endif %}">
+              {{ order.get_status_display }}
+            </span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-medium">合計金額:</span>
+            <span class="font-bold text-red-600">¥{{ order.total_amount }}</span>
+          </div>
+        </div>
+      </div>
+      
+      <div>
+        <h3 class="font-semibold mb-2">顧客情報</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="font-medium">顧客名:</span>
+            <span>{{ order.customer.name|default:"顧客名なし" }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-medium">LINE ID:</span>
+            <span>{{ order.customer.line_id }}</span>
+          </div>
+        </div>
+        
+        <h3 class="font-semibold mb-2 mt-4">ショップ情報</h3>
+        <div class="space-y-2 text-sm">
+          <div class="flex justify-between">
+            <span class="font-medium">ショップ名:</span>
+            <span>{{ order.shop.name }}</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="font-medium">住所:</span>
+            <span>{{ order.shop.address|default:"未設定" }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    {% if order.note %}
+    <div class="mt-6 pt-4 border-t">
+      <h3 class="font-semibold mb-2">備考</h3>
+      <p class="text-sm text-gray-600">{{ order.note }}</p>
+    </div>
+    {% endif %}
+    
+    {% if order.pickup_time %}
+    <div class="mt-4">
+      <h3 class="font-semibold mb-2">受け取り希望時間</h3>
+      <p class="text-sm text-gray-600">{{ order.pickup_time }}</p>
+    </div>
+    {% endif %}
+  </div>
+  
+  <div class="bg-white rounded-lg shadow-md p-6">
+    <h2 class="text-xl font-bold mb-4">注文商品</h2>
+    
+    <div class="space-y-4">
+      {% for item in order.items.all %}
+      <div class="flex items-center space-x-4 border-b pb-4 last:border-b-0">
+        <div class="w-20 h-20 flex-shrink-0">
+          {% if item.product.image %}
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="w-full h-full object-cover rounded">
+          {% else %}
+          <img src="{% static 'img/noImage.png' %}" alt="画像なし" class="w-full h-full object-cover rounded">
+          {% endif %}
+        </div>
+        
+        <div class="flex-1">
+          <h3 class="font-bold">{{ item.product.name }}</h3>
+          <p class="text-sm text-gray-600">{{ item.product.shop.name }}</p>
+          <p class="text-sm text-gray-500">単価: ¥{{ item.price }}</p>
+        </div>
+        
+        <div class="text-right">
+          <p class="text-lg font-bold">数量: {{ item.quantity }}</p>
+          <p class="text-lg font-bold text-red-600">小計: ¥{{ item.subtotal }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %} 

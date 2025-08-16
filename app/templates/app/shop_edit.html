@@ -1,0 +1,78 @@
+{% extends "app/base.html" %} {% load static %} {% block content %}
+<div class="mb-5">
+  <a href="{% url 'app:shop_manage' %}" class="text-blue-600 hover:text-blue-800">← ショップ管理に戻る</a>
+</div>
+
+<div class="mb-5">
+  <h1 class="text-3xl font-bold text-center">{{ shop.name }} - 編集</h1>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="max-w-2xl mx-auto">
+  {% csrf_token %}
+  
+  <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+    <div>
+      <label for="id_name" class="block text-sm font-medium text-gray-700 mb-2">ショップ名 *</label>
+      <input type="text" name="name" id="id_name" value="{{ shop.name }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例: カフェ・ド・パリ">
+    </div>
+    
+    <div>
+      <label for="id_address" class="block text-sm font-medium text-gray-700 mb-2">住所</label>
+      <input type="text" name="address" id="id_address" value="{{ shop.address|default:'' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例: 東京都渋谷区...">
+    </div>
+    
+    <div>
+      <label for="id_tel" class="block text-sm font-medium text-gray-700 mb-2">電話番号</label>
+      <input type="tel" name="tel" id="id_tel" value="{{ shop.tel|default:'' }}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="例: 03-1234-5678">
+    </div>
+    
+    <div>
+      <label for="id_description" class="block text-sm font-medium text-gray-700 mb-2">説明</label>
+      <textarea name="description" id="id_description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="ショップの特徴や雰囲気を説明してください">{{ shop.description|default:'' }}</textarea>
+    </div>
+    
+    <div>
+      <label for="id_image" class="block text-sm font-medium text-gray-700 mb-2">画像</label>
+      {% if shop.image %}
+      <div class="mb-2">
+        <p class="text-sm text-gray-600 mb-2">現在の画像:</p>
+        <img src="{{ shop.image.url }}" alt="{{ shop.name }}" class="w-32 h-32 object-cover rounded border">
+      </div>
+      {% endif %}
+      <input type="file" name="image" id="id_image" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <p class="text-sm text-gray-500 mt-1">新しい画像を選択すると、現在の画像が置き換えられます</p>
+    </div>
+    
+    <div>
+      <label for="id_logo" class="block text-sm font-medium text-gray-700 mb-2">ロゴ</label>
+      {% if shop.logo %}
+      <div class="mb-2">
+        <p class="text-sm text-gray-600 mb-2">現在のロゴ:</p>
+        <img src="{{ shop.logo.url }}" alt="{{ shop.name }} ロゴ" class="w-32 h-32 object-contain rounded border">
+      </div>
+      {% endif %}
+      <input type="file" name="logo" id="id_logo" accept="image/*" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <p class="text-sm text-gray-500 mt-1">新しいロゴを選択すると、現在のロゴが置き換えられます</p>
+    </div>
+    
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label for="id_open_time" class="block text-sm font-medium text-gray-700 mb-2">開店時間 *</label>
+        <input type="time" name="open_time" id="id_open_time" value="{{ shop.open_time|time:'H:i' }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+      
+      <div>
+        <label for="id_close_time" class="block text-sm font-medium text-gray-700 mb-2">閉店時間 *</label>
+        <input type="time" name="close_time" id="id_close_time" value="{{ shop.close_time|time:'H:i' }}" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+    </div>
+    
+    <div class="text-center">
+      <button type="submit" class="bg-blue-600 text-white px-8 py-3 mt-5 rounded-lg text-lg font-bold hover:bg-blue-700 transition-colors border-2 border-blue-700 shadow-lg">
+        ✏️ 更新する
+      </button>
+    </div>
+  </div>
+</form>
+
+{% endblock %} 

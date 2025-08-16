@@ -1,0 +1,37 @@
+{% extends "app/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="max-w-md w-full bg-white rounded-lg shadow-md p-8 text-center">
+    <div class="text-6xl mb-6">📱</div>
+    
+    <h1 class="text-2xl font-bold text-gray-800 mb-4">
+      LINE認証が必要です
+    </h1>
+    
+    <p class="text-gray-600 mb-6">
+      このページにアクセスするには、LINEアプリからの認証が必要です。
+    </p>
+    
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <h2 class="font-semibold text-blue-800 mb-2">📋 アクセス方法</h2>
+      <ol class="text-sm text-blue-700 text-left space-y-1">
+        <li>1. LINEアプリでショップの公式アカウントを開く</li>
+        <li>2. 「注文する」または「メニューを見る」をタップ</li>
+        <li>3. 自動的に認証され、商品一覧が表示されます</li>
+      </ol>
+    </div>
+    
+    <div class="text-sm text-gray-500">
+      <p>URLに <code class="bg-gray-100 px-2 py-1 rounded">?line_id=YOUR_ID</code> が必要です</p>
+    </div>
+    
+    <div class="mt-6">
+      <a href="{% url 'line:index' %}" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+        LINEアプリのショップ一覧に戻る
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %} 
