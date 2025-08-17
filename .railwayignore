@@ -2,6 +2,8 @@
 node_modules/
 package-lock.json
 tools/
+package.json
+tailwind.config.js
 
 # 開発用ファイル
 *.log
