@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "tailwindcss -i ./static/css/tailwind.css -o ./static/css/style.min.css",
+    "build": "echo 'Skipping Tailwind build in production' || exit 0",
     "watch": "tailwindcss -i ./static/css/tailwind.css -o ./static/css/style.min.css --watch"
   },
   "devDependencies": {
