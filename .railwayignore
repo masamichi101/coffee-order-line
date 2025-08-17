@@ -1,8 +1,6 @@
 # Node.js関連
 node_modules/
-package-lock.json
 tools/
-package.json
 tailwind.config.js
 
 # 開発用ファイル
