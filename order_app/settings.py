@@ -15,13 +15,8 @@ DEBUG = config('DEBUG', default=True, cast=bool)
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
-# CSRF信頼できるオリジン（ngrok用）
-CSRF_TRUSTED_ORIGINS = [
-    "https://7d80a0603a9d.ngrok-free.app",
-    "https://*.ngrok-free.app",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-]
+# CSRF信頼できるオリジン
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='http://localhost:8000,http://127.0.0.1:8000').split(',')
 
 # ngrok使用時のメディアファイル設定
 ALLOWED_HOSTS = ["*"]
