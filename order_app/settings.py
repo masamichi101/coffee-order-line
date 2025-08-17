@@ -9,11 +9,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env()
 env.read_env(os.path.join(BASE_DIR, ".env"))
 
-SECRET_KEY = 'django-insecure-qw43jouzo_kilno^#iq9%!el$*z=snd@%p3fo)i@c^o463@2o7'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-qw43jouzo_kilno^#iq9%!el$*z=snd@%p3fo)i@c^o463@2o7')
 
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='*').split(',')
 
 # CSRF信頼できるオリジン（ngrok用）
 CSRF_TRUSTED_ORIGINS = [
@@ -111,6 +111,10 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
+
+# 本番環境用の静的ファイル設定
+if not DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = str(BASE_DIR / "media")
