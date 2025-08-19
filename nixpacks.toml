@@ -8,4 +8,4 @@ cmds = ["python -m venv venv", "source venv/bin/activate && pip install -r requi
 cmds = ["source venv/bin/activate && python manage.py collectstatic --noinput --clear"]
 
 [start]
-cmd = "source venv/bin/activate && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn order_app.wsgi:application --bind 0.0.0.0:8080 --timeout 120 --workers 2" 
+cmd = "source venv/bin/activate && python manage.py migrate && python manage.py createsuperuser --noinput || true && python manage.py collectstatic --noinput && gunicorn order_app.wsgi:application --bind 0.0.0.0:8080 --timeout 120 --workers 2"
