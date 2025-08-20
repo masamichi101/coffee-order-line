@@ -124,10 +124,11 @@ class LineLoginRequiredMixin:
         
         try:
             customer = Customer.objects.get(line_id=line_id)
-            request.customer = customer
-            request.line_id = line_id
         except Customer.DoesNotExist:
-            return redirect("line:line_required")
+            # 本番でも初回アクセスで自動登録
+            customer = Customer.objects.create(line_id=line_id)
+        request.customer = customer
+        request.line_id = line_id
         
         return super().dispatch(request, *args, **kwargs)
 
