@@ -115,8 +115,8 @@ class LineRequiredView(View):
 # LINEユーザーのみアクセス可能にするミックスイン
 class LineLoginRequiredMixin:
     def dispatch(self, request, *args, **kwargs):
-        # URLパラメータからline_idを取得
-        line_id = request.GET.get("line_id")
+        # URLパラメータまたはセッションからline_idを取得
+        line_id = request.GET.get("line_id") or request.session.get("line_id")
         
         # line_idがない場合は、LINE認証が必要ページにリダイレクト
         if not line_id:
@@ -127,6 +127,8 @@ class LineLoginRequiredMixin:
         except Customer.DoesNotExist:
             # 本番でも初回アクセスで自動登録
             customer = Customer.objects.create(line_id=line_id)
+        # セッションにも保存して、遷移先でも維持
+        request.session["line_id"] = line_id
         request.customer = customer
         request.line_id = line_id
         
