@@ -45,7 +45,6 @@ yarn-error.log*
 
 # Static files
 staticfiles/
-static/
 
 # Database
 *.db
