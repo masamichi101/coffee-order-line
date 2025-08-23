@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "django.contrib.sites",
+    "storages",
 ]
 
 MIDDLEWARE = [
@@ -111,10 +112,24 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
-MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
-# メディア保存先ディレクトリを確実に作成
-os.makedirs(MEDIA_ROOT, exist_ok=True)
+USE_S3 = os.getenv("USE_S3") == "1"
+
+if USE_S3:
+    # S3 をメディアストレージとして使用
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    AWS_STORAGE_BUCKET_NAME = os.getenv("AWS_STORAGE_BUCKET_NAME")
+    AWS_S3_REGION_NAME = os.getenv("AWS_S3_REGION_NAME", "ap-southeast-1")
+    AWS_S3_SIGNATURE_VERSION = "s3v4"
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_QUERYSTRING_AUTH = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_CUSTOM_DOMAIN = os.getenv("AWS_S3_CUSTOM_DOMAIN") or f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+    MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
+else:
+    MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
+    MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
+    # メディア保存先ディレクトリを確実に作成（ローカル/ボリューム用）
+    os.makedirs(MEDIA_ROOT, exist_ok=True)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
