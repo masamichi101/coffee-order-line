@@ -115,7 +115,7 @@ if not DEBUG:
 USE_S3 = config("USE_S3", default=False, cast=bool)
 
 if USE_S3:
-    # S3 をメディア/静的ファイルのストレージとして使用
+    # メディアのみ S3 を使用（静的は Whitenoise 維持）
     AWS_STORAGE_BUCKET_NAME = config("AWS_STORAGE_BUCKET_NAME")
     AWS_S3_REGION_NAME = config("AWS_S3_REGION_NAME", default="ap-southeast-2")
     AWS_S3_SIGNATURE_VERSION = "s3v4"
@@ -124,15 +124,13 @@ if USE_S3:
     AWS_DEFAULT_ACL = None
     AWS_S3_CUSTOM_DOMAIN = config("AWS_S3_CUSTOM_DOMAIN", default=f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com")
 
-    # Django 4+/5+ 推奨の STORAGES 設定
+    # Django 4+/5+ 推奨の STORAGES 設定（default = メディアのみ）
     STORAGES = {
         "default": {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"},
-        "staticfiles": {"BACKEND": "storages.backends.s3boto3.S3StaticStorage"},
     }
 
-    # 配信URL
+    # メディアの配信URLのみ S3 に
     MEDIA_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/"
-    STATIC_URL = f"https://{AWS_S3_CUSTOM_DOMAIN}/static/"
 else:
     MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
     MEDIA_ROOT = os.environ.get("MEDIA_ROOT", str(BASE_DIR / "media"))
