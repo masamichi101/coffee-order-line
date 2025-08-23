@@ -127,6 +127,7 @@ if USE_S3:
     # Django 4+/5+ 推奨の STORAGES 設定（default = メディアのみ）
     STORAGES = {
         "default": {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"},
+        "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
     }
 
     # メディアの配信URLのみ S3 に
