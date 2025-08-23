@@ -112,7 +112,7 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 if not DEBUG:
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 
-USE_S3 = os.getenv("USE_S3") == "1"
+USE_S3 = config("USE_S3", default=False, cast=bool)
 
 if USE_S3:
     # S3 をメディアストレージとして使用
