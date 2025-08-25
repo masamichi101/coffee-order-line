@@ -94,6 +94,7 @@ class LineAuth {
     links.forEach((link) => {
       this.addLineIdToElement(link, '/line/cart/');
     });
+    // バッジ初期化（cart-link 内の badge があれば維持）
   }
 
   // 注文履歴リンクを更新

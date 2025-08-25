@@ -8,16 +8,7 @@
     
 
     <!-- カートアイコン -->
-    {% if cart %}
-    <a href="{% url 'line:cart' %}?line_id={{ line_id }}" class="relative bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-      🛒 カート
-      {% if cart.item_count > 0 %}
-      <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold">
-        {{ cart.item_count }}
-      </span>
-      {% endif %}
-    </a>
-    {% endif %}
+    <!-- フローティングに統一したため、ここは撤去 -->
   </div>
 </div>
 
