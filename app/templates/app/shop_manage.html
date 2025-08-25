@@ -1,11 +1,11 @@
 {% extends "app/base.html" %} {% load static %} {% block content %}
 <div class="mb-5">
-  <h1 class="text-3xl font-bold text-center">🏪 ショップ管理</h1>
+  <h1 class="text-3xl font-bold text-center">ショップ管理</h1>
 </div>
 
 <div class="mb-5 text-center">
   <a href="{% url 'app:shop_register' %}" class="bg-green-600 text-white px-6 py-3 rounded-lg text-lg font-bold hover:bg-green-700 transition-colors border-2 border-green-700 shadow-lg">
-    🆕 新規ショップ登録
+    新規ショップ登録
   </a>
 </div>
 
@@ -43,19 +43,19 @@
       
       <div class="flex flex-wrap gap-2 mb-4">
         <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-          🏪 {{ shop.get_status_display }}
+          {{ shop.get_status_display }}
         </span>
         <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-          📦 {{ shop.products.count }}商品
+          {{ shop.products.count }}商品
         </span>
       </div>
       
       <div class="flex flex-wrap gap-2">
         <a href="{% url 'app:product_manage' shop.id %}" class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-blue-700 transition-colors border border-blue-700">
-          🍹 商品管理
+          商品管理
         </a>
         <a href="{% url 'app:shop_edit' shop.id %}" class="bg-yellow-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-yellow-700 transition-colors border border-yellow-700">
-          ✏️ 編集
+        編集
         </a>
       </div>
     </div>

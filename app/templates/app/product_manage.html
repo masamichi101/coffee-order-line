@@ -34,16 +34,16 @@
           🏷️ {{ product.get_category_display }}
         </span>
         <span class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-          💰 ¥{{ product.price }}
+          ¥{{ product.price }}
         </span>
         <span class="px-2 py-1 bg-orange-100 text-orange-800 text-xs rounded-full">
-          📦 {{ product.stock }}個
+          {{ product.stock }}個
         </span>
       </div>
       
       <div class="flex flex-wrap gap-2">
         <a href="{% url 'app:product_edit' product.id %}" class="bg-yellow-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-yellow-700 transition-colors border border-yellow-700">
-          ✏️ 編集
+          編集
         </a>
       </div>
     </div>
