@@ -32,14 +32,14 @@
 </div>
 
 <div class="mb-8">
-  <h2 class="text-2xl font-bold mb-4">🍹 商品一覧</h2>
+  <h2 class="text-2xl font-bold mb-4">商品一覧</h2>
   
   {% for category, products in products_by_category.items %}
   <div class="mb-6">
     <h3 class="text-xl font-semibold mb-3 text-gray-700 border-b pb-2">
-      {% if category == "food" %}🍽️ フード
-      {% elif category == "drink" %}🥤 ドリンク
-      {% else %}🍹 その他
+      {% if category == "food" %}フード
+      {% elif category == "drink" %}ドリンク
+      {% else %}その他
       {% endif %}
     </h3>
     
@@ -103,7 +103,7 @@
   </div>
   {% empty %}
   <div class="text-center text-gray-500 py-10">
-    <div class="text-6xl mb-4">🍹</div>
+    <div class="text-6xl mb-4"></div>
     <p class="text-lg mb-2">商品が登録されていません</p>
     <p class="text-sm">または、すべての商品が販売停止中です</p>
   </div>

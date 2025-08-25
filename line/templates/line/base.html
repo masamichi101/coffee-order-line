@@ -26,6 +26,19 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="{% static 'js/line-auth.js' %}"></script>
 
+    <script>
+      // Django messages を3秒でフェードアウト
+      document.addEventListener('DOMContentLoaded', function() {
+        const container = document.querySelector('.fixed.top-4.right-4');
+        if (!container) return;
+        setTimeout(() => {
+          container.style.transition = 'opacity 300ms ease';
+          container.style.opacity = '0';
+          setTimeout(() => container.remove(), 350);
+        }, 3000);
+      });
+    </script>
+
     {% block extrajs %} {% endblock %}
   </body>
 </html>

@@ -37,9 +37,15 @@
     📋 注文履歴を見る
   </a>
   
-  <a href="{% url 'line:index' %}?line_id={{ line_id }}" class="bg-gray-600 text-white px-6 py-3 rounded-lg hover:bg-gray-700 transition-colors border border-gray-700 block">
-    ショップ一覧に戻る
+  {% if order.shop and order.shop.id %}
+  <a href="{% url 'line:product' order.shop.id %}?line_id={{ line_id }}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors border border-green-700 block">
+    商品一覧に戻る
   </a>
+  {% else %}
+  <a href="{% url 'line:index' %}?line_id={{ line_id }}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors border border-green-700 block">
+    商品一覧に戻る
+  </a>
+  {% endif %}
 </div>
 
 {% endblock %} 

@@ -9,6 +9,7 @@ from django.http.response import (
     HttpResponseBadRequest,
     HttpResponseServerError,
 )
+from django.http import JsonResponse
 
 from line.forms import CustomerForm
 
@@ -231,11 +232,21 @@ class CartView(LineLoginRequiredMixin, View):
                 
                 messages.success(request, f"{product.name}をカートに追加しました")
                 
-                # カートに追加後は商品詳細ページに戻る
+                # AJAX要求ならJSONを返す
+                if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                    return JsonResponse({
+                        "ok": True,
+                        "cart_count": cart.item_count,
+                        "message": f"{product.name}をカートに追加しました",
+                    })
+                
+                # 通常はリダイレクト
                 return redirect(build_url_with_line_id("line:product", request.line_id, shop_id=product.shop.id))
                 
             except Product.DoesNotExist:
                 messages.error(request, "商品が見つかりません")
+                if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                    return JsonResponse({"ok": False, "message": "商品が見つかりません"}, status=404)
                 return redirect(build_url_with_line_id("line:index", request.line_id))
         
         elif action == "update_quantity":

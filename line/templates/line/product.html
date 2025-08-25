@@ -3,9 +3,10 @@
 
 {% block content %}
 <div class="mb-5">
-    <div class="flex justify-between items-center">
-    <a href="{% url 'line:index' %}{% if line_id %}?line_id={{ line_id }}{% endif %}" class="text-blue-600 hover:text-blue-800">← ショップ一覧に戻る</a>
+    <div class="flex justify-between items-center">   
+       <div class="text-blue-600 hover:text-blue-800"></div>
     
+
     <!-- カートアイコン -->
     {% if cart %}
     <a href="{% url 'line:cart' %}?line_id={{ line_id }}" class="relative bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
@@ -42,7 +43,7 @@
 </div>
 
 <div class="mb-8">
-  <h2 class="text-2xl font-bold mb-4">🍹 商品一覧</h2>
+  <h2 class="text-2xl font-bold mb-4">商品一覧</h2>
   
   {% if products %}
     {% for product in products %}
@@ -72,7 +73,7 @@
         </div>
         
         {% if product.is_available %}
-        <form method="post" action="{% url 'line:cart' %}?line_id={{ line_id }}" class="mt-3">
+        <form method="post" action="{% url 'line:cart' %}?line_id={{ line_id }}" class="mt-3 js-add-to-cart" data-product-id="{{ product.id }}">
           {% csrf_token %}
           <input type="hidden" name="action" value="add_to_cart">
           <input type="hidden" name="product_id" value="{{ product.id }}">
@@ -103,7 +104,7 @@
     {% endfor %}
   {% else %}
   <div class="text-center text-gray-500 py-10">
-    <div class="text-6xl mb-4">🍹</div>
+
     <p class="text-lg mb-2">商品が登録されていません</p>
     <p class="text-sm">または、すべての商品が販売停止中です</p>
   </div>
@@ -150,10 +151,10 @@ function updateFormActions() {
   const lineId = lineAuth.getLineId();
   
   if (lineId) {
-    // カートに追加フォームのactionを更新
-    const forms = document.querySelectorAll('form[action*="line:cart"]');
+    // カートに追加フォームのactionを更新（name="action" の衝突を避ける）
+    const forms = document.querySelectorAll('form[action*="/line/cart/"]');
     forms.forEach(form => {
-      form.action = `/line/cart/?line_id=${lineId}`;
+      form.setAttribute('action', `/line/cart/?line_id=${lineId}`);
     });
     
     // カートリンクのhrefを更新
@@ -170,5 +171,73 @@ function updateFormActions() {
   }
 }
 </script>
+
+{% block extrajs %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const forms = document.querySelectorAll('form.js-add-to-cart');
+  forms.forEach(form => {
+    if (form.dataset.bound === '1') return; // 二重バインド防止
+    form.dataset.bound = '1';
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      if (form.dataset.submitting === '1') return; // 多重送信防止
+      form.dataset.submitting = '1';
+      const formData = new FormData(form);
+      const submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.classList.add('opacity-50','pointer-events-none'); }
+      try {
+        const actionUrl = form.getAttribute('action');
+        const res = await fetch(actionUrl, {
+          method: 'POST',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          body: formData
+        });
+        const data = await res.json();
+        if (data.ok) {
+          // バッジ更新
+          const badge = document.querySelector('a[href*="/line/cart/"] span');
+          if (badge) { badge.textContent = data.cart_count; }
+          else {
+            const cartLink = document.querySelector('a[href*="/line/cart/"]');
+            if (cartLink) {
+              const span = document.createElement('span');
+              span.className = 'absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-bold';
+              span.textContent = data.cart_count;
+              cartLink.appendChild(span);
+            }
+          }
+          // トースト表示
+          showToast(data.message || 'カートに追加しました');
+        } else {
+          showToast(data.message || 'エラーが発生しました', true);
+        }
+      } catch (err) {
+        showToast('通信エラーが発生しました', true);
+      } finally {
+        form.dataset.submitting = '0';
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.classList.remove('opacity-50','pointer-events-none'); }
+      }
+    });
+  });
+
+  function showToast(message, isError=false) {
+    let container = document.querySelector('.fixed.top-4.right-4');
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'fixed top-4 right-4 z-50';
+      document.body.appendChild(container);
+    }
+    const div = document.createElement('div');
+    div.className = (isError
+      ? 'bg-red-100 border border-red-400 text-red-700'
+      : 'bg-green-100 border border-green-400 text-green-700') + ' px-4 py-3 rounded mb-2 shadow-lg';
+    div.textContent = message;
+    container.appendChild(div);
+    setTimeout(() => { div.remove(); }, 3000);
+  }
+});
+</script>
+{% endblock %}
 
 {% endblock %} 

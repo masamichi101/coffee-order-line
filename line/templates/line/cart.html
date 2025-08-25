@@ -2,9 +2,6 @@
 {% load static %}
 
 {% block content %}
-<div class="mb-5">
-  <a href="{% url 'line:index' %}?line_id={{ line_id }}" class="text-blue-600 hover:text-blue-800">← ショップ一覧に戻る</a>
-</div>
 
 <div class="mb-5">
   <h1 class="text-3xl font-bold text-center">🛒 カート</h1>
@@ -103,11 +100,11 @@
   
   {% if shop_id %}
   <a href="{% url 'line:product' shop_id=shop_id %}?line_id={{ line_id }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors border border-blue-700 block">
-    🍹 商品一覧に戻る
+    商品一覧に戻る
   </a>
   {% else %}
   <a href="{% url 'line:index' %}?line_id={{ line_id }}" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors border border-blue-700 block">
-    🍹 商品一覧に戻る
+    商品一覧に戻る
   </a>
   {% endif %}
 </div>
